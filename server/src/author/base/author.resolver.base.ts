@@ -25,6 +25,7 @@ import { DeleteAuthorArgs } from "./DeleteAuthorArgs";
 import { AuthorFindManyArgs } from "./AuthorFindManyArgs";
 import { AuthorFindUniqueArgs } from "./AuthorFindUniqueArgs";
 import { Author } from "./Author";
+import { User } from "../../user/base/User";
 import { AuthorService } from "../author.service";
 
 @graphql.Resolver(() => Author)
@@ -92,7 +93,15 @@ export class AuthorResolverBase {
   async createAuthor(@graphql.Args() args: CreateAuthorArgs): Promise<Author> {
     return await this.service.create({
       ...args,
-      data: args.data,
+      data: {
+        ...args.data,
+
+        user: args.data.user
+          ? {
+              connect: args.data.user,
+            }
+          : undefined,
+      },
     });
   }
 
@@ -109,7 +118,15 @@ export class AuthorResolverBase {
     try {
       return await this.service.update({
         ...args,
-        data: args.data,
+        data: {
+          ...args.data,
+
+          user: args.data.user
+            ? {
+                connect: args.data.user,
+              }
+            : undefined,
+        },
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
@@ -140,5 +157,21 @@ export class AuthorResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => User, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "any",
+  })
+  async user(@graphql.Parent() parent: Author): Promise<User | null> {
+    const result = await this.service.getUser(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

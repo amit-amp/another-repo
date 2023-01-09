@@ -5,4 +5,5 @@ export type AuthorOrderByInput = {
   createdAt?: SortOrder;
   updatedAt?: SortOrder;
   name?: SortOrder;
+  userId?: SortOrder;
 };
