@@ -1,5 +1,5 @@
-datasource postgres {
-  provider = "postgresql"
+datasource mysql {
+  provider = "mysql"
   url      = env("DB_URL")
 }
 
@@ -16,6 +16,7 @@ model User {
   username  String   @unique
   password  String
   roles     Json
+  author    Author?
 }
 
 model Author {
@@ -23,4 +24,6 @@ model Author {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String?
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @unique
 }

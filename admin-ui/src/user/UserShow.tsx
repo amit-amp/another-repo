@@ -5,7 +5,9 @@ import {
   ShowProps,
   TextField,
   DateField,
+  ReferenceField,
 } from "react-admin";
+import { AUTHOR_TITLE_FIELD } from "../author/AuthorTitle";
 
 export const UserShow = (props: ShowProps): React.ReactElement => {
   return (
@@ -18,6 +20,9 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
         <TextField label="Last Name" source="lastName" />
         <TextField label="Username" source="username" />
         <TextField label="Roles" source="roles" />
+        <ReferenceField label="Author" source="author.id" reference="Author">
+          <TextField source={AUTHOR_TITLE_FIELD} />
+        </ReferenceField>
       </SimpleShowLayout>
     </Show>
   );
